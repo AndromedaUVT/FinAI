@@ -1,49 +1,47 @@
 import streamlit as st
 
-st.set_page_config(page_title="ngo app", layout="centered")
+st.set_page_config(page_title="NGO App", layout="centered")
 
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
-    background: linear-gradient(135deg, #dbeafe, #ede9fe);
+    background: linear-gradient(135deg, #dbeafe 0%, #e9d5ff 50%, #c7d2fe 100%);
 }
 
-[data-testid="stHeader"] {
-    background: rgba(0,0,0,0);
-}
-
-h1, h2, h3 {
-    color: #1e1b4b;
+h1 {
     text-align: center;
+    font-size: 50px;
+    font-weight: 800;
+    color: #312e81;
 }
 
-.stTabs [data-baseweb="tab-list"] {
-    gap: 20px;
-    justify-content: center;
+.section-title {
+    text-align: center;
+    font-size: 34px;
+    font-weight: 700;
+    color: #3730a3;
+    margin-bottom: 10px;
 }
 
-.stTabs [data-baseweb="tab"] {
-    height: 50px;
-    background-color: white;
-    border-radius: 10px 10px 0px 0px;
-    padding: 10px 20px;
-    color: #1e1b4b;
-    font-weight: 600;
+.text {
+    text-align: center;
+    font-size: 18px;
+    color: #4c1d95;
+    margin-bottom: 25px;
 }
 
 .stButton > button {
-    background-color: #6366f1;
+    width: 100%;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
     color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 22px;
-    font-size: 16px;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 17px;
     font-weight: 600;
 }
 
 .stButton > button:hover {
-    background-color: #4f46e5;
-    color: white;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
 }
 
 div[data-testid="stTextInput"] input {
@@ -52,31 +50,105 @@ div[data-testid="stTextInput"] input {
 </style>
 """, unsafe_allow_html=True)
 
+if "page" not in st.session_state:
+    st.session_state.page = "login"
+
 st.title("NGO Finance AI")
 
-tab1, tab2 = st.tabs(["login", "create account"])
+if st.session_state.page == "login":
 
-with tab1:
-    st.subheader("login")
+    st.markdown('<div class="section-title">Login</div>', unsafe_allow_html=True)
 
-    login_user = st.text_input("username or email", key="login_user")
-    login_pass = st.text_input("password", type="password", key="login_pass")
+    user = st.text_input("Username", key="login_user")
+    password = st.text_input("Password", type="password", key="login_pass")
 
-    if st.button("login"):
-        if login_user == "" or login_pass == "":
-            st.warning("complete all fields")
+    if st.button("Login"):
+        if user == "" or password == "":
+            st.warning("Complete all fields")
         else:
-            st.success("login pressed")
+            st.session_state.page = "dashboard"
+            st.rerun()
 
-with tab2:
-    st.subheader("create account")
+    if st.button("Create Account"):
+        st.session_state.page = "create"
+        st.rerun()
 
-    create_user = st.text_input("username", key="create_user")
-    create_pass = st.text_input("password", type="password", key="create_pass")
-    create_org = st.text_input("organization", key="create_org")
 
-    if st.button("create account"):
-        if create_user == "" or create_pass == "" or create_org == "":
-            st.warning("complete all fields")
+elif st.session_state.page == "create":
+
+    st.markdown('<div class="section-title">Create Account</div>', unsafe_allow_html=True)
+
+    user = st.text_input("Username", key="create_user")
+    password = st.text_input("Password", type="password", key="create_pass")
+    org = st.text_input("Organization", key="create_org")
+
+    if st.button("Create Account Now"):
+        if user == "" or password == "" or org == "":
+            st.warning("Complete all fields")
         else:
-            st.success("account created")
+            st.success("Account created")
+
+    if st.button("Back to Login"):
+        st.session_state.page = "login"
+        st.rerun()
+
+
+elif st.session_state.page == "dashboard":
+
+    st.markdown('<div class="section-title">Dashboard</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="text">Here you can manage your financial data.</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="text">View reports to see summaries of your data.</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="text">Edit data to modify or update existing information.</div>', unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("View Reports"):
+            st.session_state.page = "reports"
+            st.rerun()
+
+    with col2:
+        if st.button("Edit Data"):
+            st.session_state.page = "edit"
+            st.rerun()
+
+    if st.button("Logout"):
+        st.session_state.page = "login"
+        st.rerun()
+
+
+elif st.session_state.page == "reports":
+
+    st.markdown('<div class="section-title">Reports</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="text">This section will display financial reports.</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="text">You will be able to filter and analyze data here.</div>', unsafe_allow_html=True)
+
+    if st.button("Back to Dashboard"):
+        st.session_state.page = "dashboard"
+        st.rerun()
+
+
+elif st.session_state.page == "edit":
+
+    st.markdown('<div class="section-title">Edit Data</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="text">Here you can modify existing data entries.</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="text">Changes will be saved in the database later.</div>', unsafe_allow_html=True)
+
+    value = st.text_input("Modify something")
+
+    if st.button("Save Changes"):
+        if value == "":
+            st.warning("Write something first")
+        else:
+            st.success("Changes saved")
+
+    if st.button("Back to Dashboard"):
+        st.session_state.page = "dashboard"
+        st.rerun()
